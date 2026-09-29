@@ -97,4 +97,6 @@ src/demo/     the playground deployed to GitHub Pages
 
 ## License
 
-MIT. See [LICENSE](LICENSE). Not affiliated with x.ai or OpenAI.
+MIT. See [LICENSE](LICENSE). Parts of the engine are adapted from bloub, whose
+MIT notice is in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Not
+affiliated with x.ai or OpenAI.
