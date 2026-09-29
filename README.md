@@ -1,7 +1,7 @@
 # beret
 
 A living SVG hat. One filled shape morphs between **8 states** and **6 hats**,
-with two eyes clipped to its silhouette. No animation library: every frame is
+with two eyes cut out of it. No animation library: every frame is
 `engine.sample(t)`, a pure function of time.
 
 **Demo:** https://0xashrk.github.io/beret/
@@ -41,7 +41,7 @@ import { Beret } from './src'
 | `size` | `24` | CSS size of the square box |
 | `frozenAt` | | render exactly this engine time, no animation loop |
 | `paused` | `false` | stop animating and show the state's resting pose |
-| `colors` | Gina reds | `{ body, shade, eye }`, any subset |
+| `colors` | Gina reds | `{ body, shade }`, any subset |
 | `title` | | set it and the SVG is announced as an image; omit it and it is decorative |
 
 The component is `'use client'` and SSR-safe: server and first client render
@@ -81,9 +81,10 @@ still of the current state instead.
   not from the full pose of the state being left. Outside a fade the outgoing
   state keeps animating while it fades. Same for hats. A test drives a session
   frame by frame and bounds the per-frame jump.
-- **Eyes are clipped to the body.** They are drawn in the hat's own
-  coordinates with the body as a `clipPath`, so they tilt, squash and spin with
-  it and cut off at the edge instead of spilling over.
+- **Eyes are holes.** They are black shapes in an SVG `mask` on the hat, so
+  whatever is behind the hat shows through them, as on the Grok bot. The mask
+  is referenced from inside the hat group, so the holes tilt, squash and spin
+  with it, and they can only ever open where there is hat.
 - **Ease-out, no springs.** Blends use `easeOutQuint`. The only bounce is the
   squash on the `happy` landing, written into that state.
 

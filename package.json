@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "A living SVG hat: one shape morphing between states and hats, with eyes clipped to it.",
+  "description": "A living SVG hat: one shape morphing between states and hats, with eyes cut out of it.",
   "license": "MIT",
   "packageManager": "pnpm@10.11.0",
   "scripts": {

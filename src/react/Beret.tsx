@@ -9,10 +9,9 @@ import type { StateId } from '../engine/states'
 export interface BeretColors {
   body: string
   shade: string
-  eye: string
 }
 
-export const DEFAULT_COLORS: BeretColors = { body: '#b50d00', shade: '#7c0600', eye: '#fff4ec' }
+export const DEFAULT_COLORS: BeretColors = { body: '#b50d00', shade: '#7c0600' }
 
 export interface BeretProps {
   state?: StateId
@@ -141,45 +140,53 @@ export function Beret({
         <clipPath id={`${id}-clip`}>
           <path d={frame.body} />
         </clipPath>
+        {/* The eyes are holes, not paint: whatever sits behind the hat shows
+            through them. The mask is used from inside the hat group, so its
+            user space is the hat's and the holes tilt, squash and spin with it. */}
+        <mask id={`${id}-eyes`} maskUnits="userSpaceOnUse" x="-2" y="-2" width="4" height="4">
+          <rect x="-2" y="-2" width="4" height="4" fill="#fff" />
+          {frame.eyeOpacity > 0.002 ? (
+            <g opacity={frame.eyeOpacity}>
+              {frame.eyes.map((e, i) => {
+                const hw = e.w * 0.95
+                const hh = e.h * 0.22
+                return (
+                  <g key={i} transform={`translate(${fmt(e.cx)} ${fmt(e.cy)}) rotate(${fmt(e.rot)})`}>
+                    {e.capsule > 0.01 ? (
+                      <rect
+                        x={fmt(-e.w / 2)}
+                        y={fmt(-e.h / 2)}
+                        width={fmt(e.w)}
+                        height={fmt(e.h)}
+                        rx={fmt(Math.min(e.w, e.h) / 2)}
+                        fill="#000"
+                        opacity={e.capsule}
+                      />
+                    ) : null}
+                    {e.caret > 0.01 ? (
+                      <path
+                        d={`M${fmt(-hw)} ${fmt(hh)}L0 ${fmt(-hh)}L${fmt(hw)} ${fmt(hh)}`}
+                        fill="none"
+                        stroke="#000"
+                        strokeWidth={fmt(e.w * 0.7)}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        opacity={e.caret}
+                      />
+                    ) : null}
+                  </g>
+                )
+              })}
+            </g>
+          ) : null}
+        </mask>
       </defs>
       <g transform={frame.hatTransform}>
-        <path d={frame.body} fill={c.body} />
-        <path d={frame.shade} fill={c.shade} clipPath={clip} />
-        <path d={frame.accent} fill={c.body} transform={frame.accentTransform} />
-        {frame.eyeOpacity > 0.002 ? (
-          <g clipPath={clip} opacity={frame.eyeOpacity}>
-            {frame.eyes.map((e, i) => {
-              const hw = e.w * 0.95
-              const hh = e.h * 0.22
-              return (
-                <g key={i} transform={`translate(${fmt(e.cx)} ${fmt(e.cy)}) rotate(${fmt(e.rot)})`}>
-                  {e.capsule > 0.01 ? (
-                    <rect
-                      x={fmt(-e.w / 2)}
-                      y={fmt(-e.h / 2)}
-                      width={fmt(e.w)}
-                      height={fmt(e.h)}
-                      rx={fmt(Math.min(e.w, e.h) / 2)}
-                      fill={c.eye}
-                      opacity={e.capsule}
-                    />
-                  ) : null}
-                  {e.caret > 0.01 ? (
-                    <path
-                      d={`M${fmt(-hw)} ${fmt(hh)}L0 ${fmt(-hh)}L${fmt(hw)} ${fmt(hh)}`}
-                      fill="none"
-                      stroke={c.eye}
-                      strokeWidth={fmt(e.w * 0.7)}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      opacity={e.caret}
-                    />
-                  ) : null}
-                </g>
-              )
-            })}
-          </g>
-        ) : null}
+        <g mask={`url(#${id}-eyes)`}>
+          <path d={frame.body} fill={c.body} />
+          <path d={frame.shade} fill={c.shade} clipPath={clip} />
+          <path d={frame.accent} fill={c.body} transform={frame.accentTransform} />
+        </g>
       </g>
       {frame.decor.map((d, i) => {
         if (d.kind === 'dot') {

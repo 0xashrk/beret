@@ -58,7 +58,7 @@ export function App() {
     <div className="page">
       <header className="masthead">
         <h1>beret</h1>
-        <p>One shape, eight states, six hats. Eyes are clipped to the silhouette; every frame is a pure function of time.</p>
+        <p>One shape, eight states, six hats. The eyes are holes cut through it; every frame is a pure function of time.</p>
         <nav>
           <a href="https://github.com/0xashrk/beret">GitHub</a>
           <button type="button" className="quiet" aria-pressed={dark} onClick={() => setDark((d) => !d)}>
