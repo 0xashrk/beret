@@ -68,7 +68,10 @@ export function Beret({
   useEffect(() => engineRef.current!.setHat(hat, clock()), [hat])
   useEffect(() => engineRef.current!.setFace(face, clock()), [face])
 
+  // matchMedia and IntersectionObserver are missing in jsdom and some embedded
+  // webviews; without them the bot simply animates whenever mounted.
   useEffect(() => {
+    if (typeof window.matchMedia !== 'function') return
     const query = window.matchMedia('(prefers-reduced-motion: reduce)')
     setReducedMotion(query.matches)
     const onChange = () => setReducedMotion(query.matches)
@@ -81,14 +84,17 @@ export function Beret({
     if (!el) return
     let intersecting = true
     const update = () => setOnScreen(intersecting && document.visibilityState === 'visible')
-    const observer = new IntersectionObserver((entries) => {
-      intersecting = entries.some((e) => e.isIntersecting)
-      update()
-    })
-    observer.observe(el)
+    const observer =
+      typeof IntersectionObserver === 'function'
+        ? new IntersectionObserver((entries) => {
+            intersecting = entries.some((e) => e.isIntersecting)
+            update()
+          })
+        : null
+    observer?.observe(el)
     document.addEventListener('visibilitychange', update)
     return () => {
-      observer.disconnect()
+      observer?.disconnect()
       document.removeEventListener('visibilitychange', update)
     }
   }, [])
